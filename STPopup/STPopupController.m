@@ -13,6 +13,7 @@
 #import "UIResponder+STPopup.h"
 
 CGFloat const STPopupBottomSheetExtraHeight = 80;
+CGFloat const STPopupLeftSheetExtraWidth =115;
 
 static NSMutableSet *_retainedPopupControllers;
 
@@ -466,7 +467,11 @@ static NSMutableSet *_retainedPopupControllers;
         containerViewY = _containerViewController.view.bounds.size.height - containerViewHeight;
         containerViewHeight += STPopupBottomSheetExtraHeight;
     }
-    
+    else if(self.style==STPopupStyleLeft)
+    {
+        containerViewY=0;
+     }
+
     _containerView.frame = CGRectMake((_containerViewController.view.bounds.size.width - containerViewWidth) / 2,
                                       containerViewY, containerViewWidth, containerViewHeight);
     _navigationBar.frame = CGRectMake(0, 0, containerViewWidth, preferredNavigationBarHeight);
@@ -765,6 +770,13 @@ static NSMutableSet *_retainedPopupControllers;
                 _containerView.transform = CGAffineTransformMakeScale(1.1, 1.1);
             }
                 break;
+            case STPopupTransitionStyleSliderLeft:
+            {
+              _containerView.alpha = 1;
+              _containerView.transform = CGAffineTransformMakeTranslation(_contentView.frame.size.width, 0);
+                break;
+            }
+
             case STPopupTransitionStyleSlideVertical:
             default: {
                 _containerView.alpha = 1;
@@ -779,7 +791,12 @@ static NSMutableSet *_retainedPopupControllers;
         [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0 usingSpringWithDamping:0.8 initialSpringVelocity:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             _backgroundView.alpha = lastBackgroundViewAlpha;
             _containerView.alpha = 1;
-            _containerView.transform = CGAffineTransformIdentity;
+
+        if(self.transitionStyle==STPopupTransitionStyleSliderLeft)
+                _containerView.transform =  CGAffineTransformMakeTranslation((_contentView.frame.size.width/2)+STPopupLeftSheetExtraWidth, 0);
+            else
+                _containerView.transform = CGAffineTransformIdentity;
+
         } completion:^(BOOL finished) {
             _containerView.userInteractionEnabled = YES;
             [transitionContext completeTransition:![transitionContext transitionWasCancelled]];
@@ -812,6 +829,11 @@ static NSMutableSet *_retainedPopupControllers;
                     _containerView.transform = CGAffineTransformMakeScale(0.9, 0.9);
                 }
                     break;
+                case STPopupTransitionStyleSliderLeft: {
+                    _containerView.transform =  CGAffineTransformMakeTranslation((_containerView.frame.size.width)+_contentView.frame.size.width, 0);
+                    break;
+                 }
+
                 case STPopupTransitionStyleSlideVertical:
                 default: {
                     _containerView.transform = CGAffineTransformMakeTranslation(0, _containerViewController.view.bounds.size.height - originY + _containerView.frame.size.height);
@@ -838,6 +860,10 @@ static NSMutableSet *_retainedPopupControllers;
 
 - (void)popupNavigationBar:(STPopupNavigationBar *)navigationBar touchDidMoveWithOffset:(CGFloat)offset
 {
+    if(self.transitionStyle==STPopupTransitionStyleSliderLeft)
+        return;
+    
+
     [_containerView endEditing:YES];
     
     if (self.style == STPopupStyleBottomSheet && offset < -STPopupBottomSheetExtraHeight) {
@@ -848,6 +874,10 @@ static NSMutableSet *_retainedPopupControllers;
 
 - (void)popupNavigationBar:(STPopupNavigationBar *)navigationBar touchDidEndWithOffset:(CGFloat)offset
 {
+    if(self.transitionStyle==STPopupTransitionStyleSliderLeft)
+        return;
+    
+
     if (offset > 150) {
         STPopupTransitionStyle transitionStyle = self.transitionStyle;
         self.transitionStyle = STPopupTransitionStyleSlideVertical;
