@@ -17,7 +17,11 @@ typedef NS_ENUM(NSUInteger, STPopupStyle) {
     /**
      Popup will be horizontally centered and sticked to bottom.
      */
-    STPopupStyleBottomSheet
+    STPopupStyleBottomSheet,
+     /**
+     Popup will be come from left.
+     */
+    STPopupStyleLeft
 };
 
 typedef NS_ENUM(NSUInteger, STPopupTransitionStyle) {
@@ -28,7 +32,11 @@ typedef NS_ENUM(NSUInteger, STPopupTransitionStyle) {
     /**
      Fade-in in center from transparent to opaque.
      */
-    STPopupTransitionStyleFade
+    STPopupTransitionStyleFade,
+      /**
+     Slide from Left.
+     */
+    STPopupTransitionStyleSliderLeft
 };
 
 @interface STPopupController : NSObject
