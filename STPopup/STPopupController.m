@@ -621,7 +621,11 @@ static NSMutableSet *_retainedPopupControllers;
     [UIView setAnimationCurve:curve];
     [UIView setAnimationDuration:duration];
     
-    _containerView.transform = CGAffineTransformIdentity;
+      if(self.transitionStyle==STPopupTransitionStyleSliderLeft)
+        _containerView.transform =  CGAffineTransformMakeTranslation((_contentView.frame.size.width/2)+STPopupLeftSheetExtraWidth, 0);
+    else
+        _containerView.transform = CGAffineTransformIdentity;
+
     
     [UIView commitAnimations];
 }
@@ -638,8 +642,11 @@ static NSMutableSet *_retainedPopupControllers;
     }
     
     CGAffineTransform lastTransform = _containerView.transform;
-    _containerView.transform = CGAffineTransformIdentity; // Set transform to identity for calculating a correct "minOffsetY"
-    
+       if(self.transitionStyle==STPopupTransitionStyleSliderLeft)
+        _containerView.transform =  CGAffineTransformMakeTranslation((_contentView.frame.size.width/2)+STPopupLeftSheetExtraWidth, 0);
+    else
+        _containerView.transform = CGAffineTransformIdentity; // Set transform to identity for calculating a correct "minOffsetY"
+ 
     CGFloat textFieldBottomY = [currentTextInput convertPoint:CGPointZero toView:_containerViewController.view].y + currentTextInput.bounds.size.height;
     CGFloat keyboardHeight = [_keyboardInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
     // For iOS 7
@@ -674,15 +681,21 @@ static NSMutableSet *_retainedPopupControllers;
     NSTimeInterval duration = [_keyboardInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     UIViewAnimationCurve curve = [_keyboardInfo[UIKeyboardAnimationCurveUserInfoKey] intValue];
     
-    _containerView.transform = lastTransform; // Restore transform
-    
+      if(self.transitionStyle==STPopupTransitionStyleSliderLeft)
+        _containerView.transform =  CGAffineTransformMakeTranslation((_contentView.frame.size.width/2)+STPopupLeftSheetExtraWidth, 0);
+    else
+        _containerView.transform = lastTransform; // Set transform to identity for calculating a correct "minOffsetY"
+  
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationCurve:curve];
     [UIView setAnimationDuration:duration];
     
-    _containerView.transform = CGAffineTransformMakeTranslation(0, -offsetY);
-    
+     if(self.transitionStyle==STPopupTransitionStyleSliderLeft)
+        _containerView.transform = CGAffineTransformMakeTranslation((_contentView.frame.size.width/2)+STPopupLeftSheetExtraWidth, -offsetY);
+   else
+       _containerView.transform = CGAffineTransformMakeTranslation(0, -offsetY);
+ 
     [UIView commitAnimations];
 }
 
